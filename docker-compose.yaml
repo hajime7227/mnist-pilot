@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .  # 🔹 ルートディレクトリを指定
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  frontend:
+    build:
+      context: .  # 🔹 ルートディレクトリを指定
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
